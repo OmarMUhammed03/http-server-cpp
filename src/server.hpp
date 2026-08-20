@@ -1,6 +1,7 @@
 #ifndef SERVER_HPP
 #define SERVER_HPP
 
+#include "constants.hpp"
 #include "socket.hpp"
 #include <cstdint>
 
@@ -14,7 +15,7 @@ public:
     void handle_client(Socket& client) const;
 
 private:
-    Socket server_socket_{-1};
+    Socket server_socket_{constants::INVALID_FD};
 };
 
 #endif

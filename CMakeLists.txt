@@ -4,6 +4,7 @@ project(http-server-starter-cpp)
 
 set(SOURCE_FILES
     src/main.cpp
+    src/constants.hpp
     src/socket.cpp
     src/socket.hpp
     src/server.cpp

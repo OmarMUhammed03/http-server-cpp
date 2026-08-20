@@ -1,11 +1,12 @@
 #ifndef SOCKET_HPP
 #define SOCKET_HPP
 
+#include "constants.hpp"
 #include <sys/socket.h>
 
 class Socket {
 public:
-    explicit Socket(int fd = -1) noexcept;
+    explicit Socket(int fd = constants::INVALID_FD) noexcept;
     ~Socket();
 
     Socket(const Socket&) = delete;

@@ -1,6 +1,7 @@
 #include "server.hpp"
 #include "response.hpp"
 #include "socket.hpp"
+#include "constants.hpp"
 #include <sstream>
 #include <cstring>
 #include <iostream>
@@ -51,7 +52,7 @@ bool TcpServer::listen(int backlog) {
 
 Socket TcpServer::accept() const {
     if (server_socket_.fd() < 0) {
-        return Socket{-1};
+        return Socket{constants::INVALID_FD};
     }
 
     struct sockaddr_in client_addr;
@@ -68,7 +69,7 @@ Socket TcpServer::accept() const {
 }
 
 void TcpServer::handle_client(Socket& client) const {
-    char buffer[4096];
+    char buffer[constants::BUFFER_SIZE];
     ssize_t bytes_received = client.recv(buffer, sizeof(buffer) - 1);
     if (bytes_received < 0) {
         std::cerr << "Error receiving data: " << std::strerror(errno) << std::endl;
@@ -78,13 +79,13 @@ void TcpServer::handle_client(Socket& client) const {
     std::cout << "Received data: " << buffer << std::endl;
     std::string request_text(buffer);
     
-    std::string first_line = request_text.substr(0, request_text.find("\r\n"));
+    std::string first_line = request_text.substr(0, request_text.find(constants::HTTP_CRLF));
 
     std::stringstream response_stream(first_line);
 
     std::string method, path, version;
     response_stream >> method >> path >> version;
-    if(method == "GET" && path == "/") {
+    if(method == constants::HTTP_METHOD_GET && path == constants::HTTP_PATH_ROOT) {
         HttpResponse::ok().send(client);
     } else {
         HttpResponse::not_found().send(client);

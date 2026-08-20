@@ -1,4 +1,5 @@
 #include <iostream>
+#include "constants.hpp"
 #include "server.hpp"
 #include "response.hpp"
 
@@ -9,14 +10,14 @@ int main() {
     std::cout << "Logs from your program will appear here!\n";
 
     TcpServer server;
-    if (!server.bind(4221) || !server.listen(5)) {
+    if (!server.bind(constants::PORT) || !server.listen(constants::BACKLOG)) {
         return 1;
     }
 
     std::cout << "Waiting for a client to connect...\n";
 
     Socket client = server.accept();
-    if (client.fd() < 0) {
+    if (client.fd() == constants::INVALID_FD) {
         return 1;
     }
 
