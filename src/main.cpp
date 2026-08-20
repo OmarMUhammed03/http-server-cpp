@@ -21,8 +21,7 @@ int main() {
     }
 
     std::cout << "Client connected\n";
-
-    HttpResponse::ok().send(client);
+    server.handle_client(client);
 
     return 0;
 }

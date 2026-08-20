@@ -68,7 +68,7 @@ Socket TcpServer::accept() const {
 }
 
 void TcpServer::handle_client(Socket& client) const {
-    char buffer[1024];
+    char buffer[4096];
     ssize_t bytes_received = client.recv(buffer, sizeof(buffer) - 1);
     if (bytes_received < 0) {
         std::cerr << "Error receiving data: " << std::strerror(errno) << std::endl;
