@@ -19,6 +19,8 @@ public:
 
     ssize_t send(const void* buf, size_t len, int flags = 0) const;
 
+    ssize_t recv(void* buf, size_t len, int flags = 0) const;
+
 private:
     int fd_;
 };

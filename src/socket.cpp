@@ -40,3 +40,8 @@ ssize_t Socket::send(const void* buf, size_t len, int flags) const {
     }
     return ::send(fd_, buf, len, flags);
 }
+
+ssize_t Socket::recv(void* buf, size_t len, int flags) const {
+    if (fd_ < 0) return -1;
+    return ::recv(fd_, buf, len, flags);
+}

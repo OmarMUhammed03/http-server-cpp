@@ -6,6 +6,10 @@ HttpResponse HttpResponse::ok() {
     return HttpResponse{"HTTP/1.1 200 OK\r\n\r\n"};
 }
 
+HttpResponse HttpResponse::not_found() {
+    return HttpResponse{"HTTP/1.1 404 Not Found\r\n\r\n"};
+}
+
 ssize_t HttpResponse::send(const Socket& client) const {
     return client.send(raw_.data(), raw_.size());
 }

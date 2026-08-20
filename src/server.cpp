@@ -1,4 +1,7 @@
 #include "server.hpp"
+#include "response.hpp"
+#include "socket.hpp"
+#include <sstream>
 #include <cstring>
 #include <iostream>
 #include <netinet/in.h>
@@ -62,4 +65,28 @@ Socket TcpServer::accept() const {
     }
 
     return Socket{client_fd};
+}
+
+void TcpServer::handle_client(Socket& client) const {
+    char buffer[1024];
+    ssize_t bytes_received = client.recv(buffer, sizeof(buffer) - 1);
+    if (bytes_received < 0) {
+        std::cerr << "Error receiving data: " << std::strerror(errno) << std::endl;
+        return;
+    }
+    buffer[bytes_received] = '\0';
+    std::cout << "Received data: " << buffer << std::endl;
+    std::string request_text(buffer);
+    
+    std::string first_line = request_text.substr(0, request_text.find("\r\n"));
+
+    std::stringstream response_stream(first_line);
+
+    std::string method, path, version;
+    response_stream >> method >> path >> version;
+    if(method == "GET" && path == "/") {
+        HttpResponse::ok().send(client);
+    } else {
+        HttpResponse::not_found().send(client);
+    }
 }

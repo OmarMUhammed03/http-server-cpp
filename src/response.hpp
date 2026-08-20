@@ -8,6 +8,8 @@ class HttpResponse {
 public:
     static HttpResponse ok();
 
+    static HttpResponse not_found();
+
     ssize_t send(const Socket& client) const;
 
 private:
