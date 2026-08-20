@@ -1,21 +1,20 @@
 #ifndef RESPONSE_HPP
 #define RESPONSE_HPP
 
-#include <string_view>
+#include <string>
 #include "socket.hpp"
 
 class HttpResponse {
 public:
-    static HttpResponse ok();
-
+    static HttpResponse ok(std::string body);
     static HttpResponse not_found();
 
     ssize_t send(const Socket& client) const;
 
 private:
-    explicit HttpResponse(std::string_view raw);
+    explicit HttpResponse(std::string raw);
 
-    std::string_view raw_;
+    std::string raw_;
 };
 
 #endif

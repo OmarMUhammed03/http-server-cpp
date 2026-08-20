@@ -3,7 +3,9 @@
 
 #include "constants.hpp"
 #include "socket.hpp"
+#include "router.hpp"
 #include <cstdint>
+#include <string>
 
 class TcpServer {
 public:
@@ -14,8 +16,11 @@ public:
     Socket accept() const;
     void handle_client(Socket& client) const;
 
+    void add_route(std::string_view method, std::string_view path, Router::Handler handler);
+
 private:
     Socket server_socket_{constants::INVALID_FD};
+    Router router_;
 };
 
 #endif

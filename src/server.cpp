@@ -5,9 +5,14 @@
 #include <sstream>
 #include <cstring>
 #include <iostream>
+#include <string_view>
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <unistd.h>
+
+void TcpServer::add_route(std::string_view method, std::string_view path, Router::Handler handler) {
+    router_.add_route(method, path, handler);
+}
 
 bool TcpServer::bind(uint16_t port) {
     int fd = ::socket(AF_INET, SOCK_STREAM, 0);
@@ -63,6 +68,7 @@ Socket TcpServer::accept() const {
                             &client_addr_len);
     if (client_fd < 0) {
         std::cerr << "Failed to accept client\n";
+        return Socket{constants::INVALID_FD};
     }
 
     return Socket{client_fd};
@@ -78,16 +84,12 @@ void TcpServer::handle_client(Socket& client) const {
     buffer[bytes_received] = '\0';
     std::cout << "Received data: " << buffer << std::endl;
     std::string request_text(buffer);
-    
     std::string first_line = request_text.substr(0, request_text.find(constants::HTTP_CRLF));
-
     std::stringstream response_stream(first_line);
 
-    std::string method, path, version;
-    response_stream >> method >> path >> version;
-    if(method == constants::HTTP_METHOD_GET && path == constants::HTTP_PATH_ROOT) {
-        HttpResponse::ok().send(client);
-    } else {
-        HttpResponse::not_found().send(client);
-    }
+    std::string method, path;
+    response_stream >> method >> path;
+
+    HttpResponse response = router_.route(method, path, "");
+    response.send(client);
 }

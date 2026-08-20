@@ -10,6 +10,11 @@ int main() {
     std::cout << "Logs from your program will appear here!\n";
 
     TcpServer server;
+    server.add_route(constants::HTTP_METHOD_GET, constants::HTTP_PATH_ROOT,
+                     [](const std::string&) { return HttpResponse::ok(""); });
+    server.add_route(constants::HTTP_METHOD_GET, "/echo/*",
+                     [](const std::string& body) { return HttpResponse::ok(body); });
+
     if (!server.bind(constants::PORT) || !server.listen(constants::BACKLOG)) {
         return 1;
     }
