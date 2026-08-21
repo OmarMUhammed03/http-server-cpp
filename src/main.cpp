@@ -11,9 +11,11 @@ int main() {
 
     TcpServer server;
     server.add_route(constants::HTTP_METHOD_GET, constants::HTTP_PATH_ROOT,
-                     [](const std::string&) { return HttpResponse::ok(""); });
+                     [](const HttpRequest &) { return HttpResponse::ok(""); });
     server.add_route(constants::HTTP_METHOD_GET, "/echo/*",
-                     [](const std::string& body) { return HttpResponse::ok(body); });
+                     [](const HttpRequest &req) { return HttpResponse::ok(req.body); });
+    server.add_route(constants::HTTP_METHOD_GET, "/user-agent",
+                     [](const HttpRequest &req) { return HttpResponse::ok(req.body); });
 
     if (!server.bind(constants::PORT) || !server.listen(constants::BACKLOG)) {
         return 1;

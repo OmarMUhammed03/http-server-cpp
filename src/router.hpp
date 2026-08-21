@@ -6,15 +6,16 @@
 #include <functional>
 #include <vector>
 #include "response.hpp"
+#include "request.hpp"
 
 class Router {
 public:
-    using Handler = std::function<HttpResponse(const std::string&)>;
+    using Handler = std::function<HttpResponse(const HttpRequest&)>;
 
     Router() = default;
 
     void add_route(std::string_view method, std::string_view path, Handler handler);
-    HttpResponse route(std::string_view method, std::string_view path, const std::string& body) const;
+    HttpResponse route(const HttpRequest& request) const;
 
 private:
     struct Route {

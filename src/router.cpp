@@ -20,11 +20,13 @@ bool Router::match_route(const Route& route, std::string_view method, std::strin
     return false;
 }
 
-HttpResponse Router::route(std::string_view method, std::string_view path, const std::string& body) const {
+HttpResponse Router::route(const HttpRequest& request) const {
     for (const auto& route : routes_) {
         std::string matched_body;
-        if (match_route(route, method, path, matched_body)) {
-            return route.handler(matched_body);
+        if (match_route(route, request.method, request.path, matched_body)) {
+            HttpRequest req = request;
+            req.body = std::move(matched_body);
+            return route.handler(req);
         }
     }
 

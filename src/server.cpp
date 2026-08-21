@@ -2,6 +2,7 @@
 #include "response.hpp"
 #include "socket.hpp"
 #include "constants.hpp"
+#include "request.hpp"
 #include <sstream>
 #include <cstring>
 #include <iostream>
@@ -83,13 +84,49 @@ void TcpServer::handle_client(Socket& client) const {
     }
     buffer[bytes_received] = '\0';
     std::cout << "Received data: " << buffer << std::endl;
+
+    HttpRequest request;
     std::string request_text(buffer);
-    std::string first_line = request_text.substr(0, request_text.find(constants::HTTP_CRLF));
-    std::stringstream response_stream(first_line);
 
-    std::string method, path;
-    response_stream >> method >> path;
+    size_t headers_end = request_text.find(std::string(constants::HTTP_CRLF) + std::string(constants::HTTP_CRLF));
+    std::string headers = headers_end != std::string::npos
+                          ? request_text.substr(0, headers_end)
+                          : request_text;
 
-    HttpResponse response = router_.route(method, path, "");
+    std::string first_line = headers.substr(0, headers.find(constants::HTTP_CRLF));
+    std::stringstream first_line_stream(first_line);
+    first_line_stream >> request.method >> request.path;
+
+    size_t header_pos = headers.find(constants::HTTP_CRLF);
+    while (header_pos != std::string::npos) {
+        size_t next_pos = headers.find(constants::HTTP_CRLF, header_pos + 2);
+        std::string header_line = headers.substr(header_pos + 2,
+                                                  next_pos != std::string::npos ? next_pos - header_pos - 2 : std::string::npos);
+        if (header_line.empty()) break;
+
+        size_t colon = header_line.find(':');
+        if (colon != std::string::npos) {
+            std::string key = header_line.substr(0, colon);
+            std::string value = header_line.substr(colon + 1);
+            if (!value.empty() && value.front() == ' ') value.erase(0, 1);
+            request.headers[key] = value;
+        }
+
+        header_pos = next_pos;
+    }
+
+    if (headers_end != std::string::npos && headers_end + 4 < request_text.size()) {
+        size_t body_start = headers_end + 4;
+        request.body = request_text.substr(body_start);
+    }
+
+    if (request.headers.count("Content-Length")) {
+        size_t content_length = std::stoul(request.headers["Content-Length"]);
+        if (request.body.size() > content_length) {
+            request.body = request.body.substr(0, content_length);
+        }
+    }
+
+    HttpResponse response = router_.route(request);
     response.send(client);
 }

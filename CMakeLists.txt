@@ -13,6 +13,8 @@ set(SOURCE_FILES
     src/response.hpp
     src/router.cpp
     src/router.hpp
+    src/request.cpp
+    src/request.hpp
 )
 
 set(CMAKE_CXX_STANDARD 23) # Enable the C++23 standard
