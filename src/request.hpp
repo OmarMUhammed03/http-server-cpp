@@ -10,6 +10,7 @@ public:
     std::string path;
     std::unordered_map<std::string, std::string> headers;
     std::string body;
+    std::string get_header_value(const std::string &key) const;
 };
 
 #endif

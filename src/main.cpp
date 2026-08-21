@@ -15,7 +15,7 @@ int main() {
     server.add_route(constants::HTTP_METHOD_GET, "/echo/*",
                      [](const HttpRequest &req) { return HttpResponse::ok(req.body); });
     server.add_route(constants::HTTP_METHOD_GET, "/user-agent",
-                     [](const HttpRequest &req) { return HttpResponse::ok(req.body); });
+                      [](const HttpRequest &req) { return HttpResponse::ok(req.get_header_value(constants::USER_AGENT)); });
 
     if (!server.bind(constants::PORT) || !server.listen(constants::BACKLOG)) {
         return 1;
