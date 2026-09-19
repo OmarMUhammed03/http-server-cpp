@@ -15,6 +15,10 @@ set(SOURCE_FILES
     src/router.hpp
     src/request.cpp
     src/request.hpp
+    src/thread_pool.cpp
+    src/thread_pool.hpp
+    src/event_loop.cpp
+    src/event_loop.hpp
 )
 
 set(CMAKE_CXX_STANDARD 23) # Enable the C++23 standard

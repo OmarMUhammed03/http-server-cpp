@@ -7,6 +7,7 @@ HttpResponse HttpResponse::ok(std::string body) {
     std::string response = std::string(constants::HTTP_200_RESPONSE);
     response += "Content-Type: text/plain\r\n";
     response += "Content-Length: " + std::to_string(body.size()) + "\r\n";
+    response += "Connection: close\r\n";
     response += "\r\n";
     response += body;
     return HttpResponse{std::move(response)};
@@ -16,6 +17,17 @@ HttpResponse HttpResponse::not_found() {
     std::string response = std::string(constants::HTTP_404_RESPONSE);
     response += "Content-Type: text/plain\r\n";
     response += "Content-Length: 0\r\n";
+    response += "Connection: close\r\n";
+    response += "\r\n";
+    return HttpResponse{std::move(response)};
+}
+
+HttpResponse HttpResponse::service_unavailable() {
+    std::string response = std::string(constants::HTTP_503_RESPONSE);
+    response += "Content-Type: text/plain\r\n";
+    response += "Content-Length: 0\r\n";
+    response += "Connection: close\r\n";
+    response += "Retry-After: 1\r\n";
     response += "\r\n";
     return HttpResponse{std::move(response)};
 }

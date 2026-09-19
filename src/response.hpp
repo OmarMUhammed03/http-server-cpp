@@ -8,6 +8,7 @@ class HttpResponse {
 public:
     static HttpResponse ok(std::string body);
     static HttpResponse not_found();
+    static HttpResponse service_unavailable();
 
     ssize_t send(const Socket& client) const;
 
