@@ -17,10 +17,14 @@ public:
 
     int fd() const noexcept;
     void reset(int new_fd = -1) noexcept;
+    int release() noexcept;
 
     ssize_t send(const void* buf, size_t len, int flags = 0) const;
 
     ssize_t recv(void* buf, size_t len, int flags = 0) const;
+
+    bool set_nonblocking() const noexcept;
+    void shutdown_write() const noexcept;
 
 private:
     int fd_;
